@@ -109,8 +109,11 @@ void MeGlWindow::installShaders()
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 
-	glBindFragDataLocation(programID, 0, "daColor");
+	//glBindFragDataLocation(programID, 0, "daColor");
 	glLinkProgram(programID);
+
+	if (!checkProgramStatus(programID))
+		return;
 
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
@@ -177,9 +180,9 @@ void MeGlWindow::sendDataToOpenGL()
 		-1.0f, +1.0f,
 		+0.0f, +0.0f, +1.0f,
 		-1.0f, -1.0f,
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, -1.0f,
 		+0.0f, +1.0f, +0.0f,
+		+1.0f, -1.0f,
+		+0.0f, +0.0f, +1.0f,
 		};
 		glGenBuffers(1, &vertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
