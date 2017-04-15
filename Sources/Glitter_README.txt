@@ -1,0 +1,1 @@
+Look at ReadMe_WKP.txt of the clean copy of Glitter-1 repository at w73919612
