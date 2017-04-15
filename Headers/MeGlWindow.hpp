@@ -25,6 +25,8 @@ public:
 	GLuint vertexArrayObject_VAO;
 	GLuint indexBufferID;
 
+	GLint numIndices;
+
 	const int width = 1280;
 	const int height = 800;
 
