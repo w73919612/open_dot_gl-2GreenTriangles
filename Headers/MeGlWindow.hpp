@@ -13,7 +13,6 @@ class MeGlWindow
 	void installShaders();
 
 protected:
-	GLint programID;
 
 	void initializeGL();
 	void paintGL();
@@ -21,6 +20,11 @@ protected:
 	//void mouseMoveEvent(QMouseEvent*);
 
 public:
+	GLint programID;
+	GLuint vertexBufferID;
+	GLuint vertexArrayObject_VAO;
+	GLuint indexBufferID;
+
 	const int width = 1280;
 	const int height = 800;
 
