@@ -23,16 +23,18 @@ public:
 	GLint programID;
 	GLuint vertexBufferID;
 	GLuint vertexArrayObject_VAO;
-	GLuint indexBufferID;
+	GLuint indexArrayBufferID;
 
 	GLint numIndices;
 
-	const int width = 1280;
-	const int height = 800;
+	int width;
+	int height;
 
-	MeGlWindow()
+	MeGlWindow(int w, int h)
 	{
 		this->runGL();
+		this->width = w;
+		this->height = h;
 	}
 		
 	~MeGlWindow() = default;

@@ -22,9 +22,7 @@ const GLuint NUM_FLOATS_PER_VERTICE = 6;
 const GLuint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(GLfloat);
 Camera camera;
 
-
-
-
+/* *************************************************************************************************/
 
 bool checkStatus(
 	GLuint objectID,
@@ -72,8 +70,6 @@ string MeGlWindow::readShaderCode(const char* fileName)
 		std::istreambuf_iterator<char>(meInput),
 		std::istreambuf_iterator<char>());
 }
-
-
 
 void MeGlWindow::installShaders()
 {
@@ -127,27 +123,27 @@ void MeGlWindow::sendDataToOpenGL()
 {
 	if (THREE_D)
 	{
-		ShapeData shape = ShapeGenerator::makeCube();
+		ShapeData cube = ShapeGenerator::makeCube();
 		GLuint vertexBufferID;
 		glGenBuffers(1, &vertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, cube.vertexBufferSize(), cube.vertices, GL_STATIC_DRAW);
 
 		// Create Vertex Array Object
 		glGenVertexArrays(1, &vertexArrayObject_VAO);
 		glBindVertexArray(vertexArrayObject_VAO);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (char*)(sizeof(float) * 3));
 
 		GLuint indexArrayBufferID;
 		glGenBuffers(1, &indexArrayBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
-		numIndices = shape.numIndices;
-		shape.cleanup();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube.indexBufferSize(), cube.indices, GL_STATIC_DRAW);
+		numIndices = cube.numIndices;
+		cube.cleanup();
 
 		GLuint transformationMatrixBufferID;
 		glGenBuffers(1, &transformationMatrixBufferID);
@@ -171,23 +167,14 @@ void MeGlWindow::sendDataToOpenGL()
 	}
 	else
 	{
-		GLfloat vertices[] =
-		{
-		+0.0f, +0.0f,
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, +1.0f,
-		+0.0f, +1.0f, +0.0f,
-		-1.0f, +1.0f,
-		+0.0f, +0.0f, +1.0f,
-		-1.0f, -1.0f,
-		+0.0f, +1.0f, +0.0f,
-		+1.0f, -1.0f,
-		+0.0f, +0.0f, +1.0f,
-		};
+
+		ShapeData tri = ShapeGenerator::makeTriangle();
+		numIndices = tri.numIndices;
+		
 		glGenBuffers(1, &vertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, tri.vertexBufferSize(), tri.vertices, GL_STATIC_DRAW);
 
 		// Create Vertex Array Object
 		glGenVertexArrays(1, &vertexArrayObject_VAO);
@@ -195,16 +182,15 @@ void MeGlWindow::sendDataToOpenGL()
 
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (void*)(sizeof(GLfloat) * 2));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(GLfloat) * 3));
 
 
-		GLuint indices[] = { 0,1,2, 0,3,4 };
-		glGenBuffers(1, &indexBufferID);
+		glGenBuffers(1, &indexArrayBufferID);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, tri.indexBufferSize(), tri.indices, GL_STATIC_DRAW);
 	}
 
 }

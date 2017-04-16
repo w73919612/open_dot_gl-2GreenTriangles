@@ -20,13 +20,14 @@ ShapeData ShapeGenerator::makeTriangle()
 		glm::vec3(+1.0f, -1.0f, +0.0f),
 		glm::vec3(+0.0f, +0.0f, +1.0f),
 	};
+
 	ret.numVertices = NUM_ARRAY_ELEMENTS(myTri);
 	ret.vertices = new Vertex[ret.numVertices];
 	memcpy(ret.vertices, myTri, sizeof(myTri));
 
-	GLshort indices[] = { 0, 1, 2 };
+	GLushort indices[] = { 0, 1, 2 };
 	ret.numIndices = NUM_ARRAY_ELEMENTS(indices);
-	ret.indices = new GLshort[ret.numIndices];
+	ret.indices = new GLushort[ret.numIndices];
 	memcpy(ret.indices, indices, sizeof(indices));
 
 	return ret;
@@ -103,7 +104,7 @@ ShapeData ShapeGenerator::makeCube() {
 		20, 22, 21, 20, 23, 22, // Bottom
 	};
 	ret.numIndices = NUM_ARRAY_ELEMENTS(stackIndices);
-	ret.indices = new GLshort[ret.numIndices];
+	ret.indices = new GLushort[ret.numIndices];
 	memcpy(ret.indices, stackIndices, sizeof(stackIndices));
 
 	return ret;

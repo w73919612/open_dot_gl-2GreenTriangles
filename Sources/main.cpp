@@ -15,25 +15,6 @@ using namespace std;
 using glm::vec3;
 using glm::mat4;
 
-struct Vertex
-{
-	glm::vec3 position;
-	glm::vec3 color;
-};
-
-Vertex myTri[] =
-{
-	glm::vec3(+0.0f, +1.0f, +0.0f),
-	glm::vec3(+1.0f, +0.0f, +0.0f),
-
-	glm::vec3(-1.0f, -1.0f, +0.0f),
-	glm::vec3(+0.0f, +1.0f, +0.0f),
-
-	glm::vec3(+1.0f, -1.0f, +0.0f),
-	glm::vec3(+0.0f, +0.0f, +1.0f),
-};
-
-GLushort indices[] = { 0, 1, 2 };
 
 int main(int argc, char * argv[]) {
 
@@ -44,6 +25,7 @@ int main(int argc, char * argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
     auto mWindow = glfwCreateWindow(mWidth, mHeight, "OpenGL", nullptr, nullptr);
 
     // Check for Valid Context
@@ -56,8 +38,8 @@ int main(int argc, char * argv[]) {
     glfwMakeContextCurrent(mWindow);
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
-	MeGlWindow meglw = MeGlWindow();
 
+	MeGlWindow meglw = MeGlWindow(mWidth, mHeight);
 
     // Rendering Loop
 		while (glfwWindowShouldClose(mWindow) == false) {
@@ -68,18 +50,34 @@ int main(int argc, char * argv[]) {
 			glfwSwapBuffers(mWindow);
 			glfwPollEvents();
 
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT);
 			//glDrawArrays(GL_TRIANGLES, 0, 3);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
-			//glDrawElementsInstanced(GL_TRIANGLES, meglw.numIndices, GL_UNSIGNED_SHORT, 0, 2);
+			                                               
+			glDrawElements
+			(
+				GL_TRIANGLES, 
+				meglw.numIndices, 
+				GL_UNSIGNED_SHORT,	// The type of the indices (see ShapeData.hpp)
+				NULL				// offset into the element array buffer (usually zero or NULL) - its a very old function.
+			);
+			/*
+			glDrawElementsInstanced
+			(
+				GL_TRIANGLES, 
+				meglw.numIndices, 
+				GL_UNSIGNED_SHORT,  // The type of the indices (see ShapeData.hpp)
+				0,				    // offset into the element array buffer (usually zero or NULL) - its a very old function.
+				NULL				// number of instances
+			);
+			*/
     }   
 		
 	glfwTerminate();
 
 	glDeleteProgram(meglw.programID);
 	glDeleteBuffers(1, &meglw.vertexBufferID); 
-	glDeleteBuffers(1, &meglw.indexBufferID);
+	glDeleteBuffers(1, &meglw.indexArrayBufferID);
 	glDeleteVertexArrays(1, &meglw.vertexArrayObject_VAO);
     return EXIT_SUCCESS;
 }

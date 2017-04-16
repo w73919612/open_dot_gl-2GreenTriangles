@@ -7,18 +7,22 @@ struct ShapeData
 	ShapeData() :
 		vertices(0), numVertices(0),
 		indices(0), numIndices(0) {}
+
 	Vertex* vertices;
 	GLint numVertices;
-	GLshort* indices;
+	GLushort* indices;
 	GLint numIndices;
+
 	GLsizeiptr vertexBufferSize() const
 	{
 		return numVertices * sizeof(Vertex);
 	}
+
 	GLsizeiptr indexBufferSize() const
 	{
 		return numIndices * sizeof(short);
 	}
+
 	void cleanup()
 	{
 		delete [] vertices;
