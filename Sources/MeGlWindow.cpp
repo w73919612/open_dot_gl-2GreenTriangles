@@ -17,9 +17,6 @@ using glm::vec3;
 using glm::mat4;
 
 bool THREE_D = false;
-const GLuint NUM_VERTICES_PER_TRI = 3;
-const GLuint NUM_FLOATS_PER_VERTICE = 6;
-const GLuint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(GLfloat);
 Camera camera;
 
 /* *************************************************************************************************/
@@ -180,12 +177,18 @@ void MeGlWindow::sendDataToOpenGL()
 		glGenVertexArrays(1, &vertexArrayObject_VAO);
 		glBindVertexArray(vertexArrayObject_VAO);
 
+		//GLint posAttrib = glGetAttribLocation(programID, "position");  // This grabs the "location" from the shader.  We may have hardcoded it so we
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(GLfloat) * 3));
+		GLint posAttrib = 0;// 	glGetAttribLocation(programID, "position");  // This grabs the "location" from the shader.  We may have hardcoded it so we
+		glEnableVertexAttribArray(posAttrib);							  // actually already know what it is. But this is how to get it if you don't.
+		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 
+		//GLint colAttrib = glGetAttribLocation(programID, "vertexColor");// This grabs the "location" from the shader.  We may have hardcoded it so we
+
+		GLint colAttrib = 1; // glGetAttribLocation(programID, "vertexColor");// This grabs the "location" from the shader.  We may have hardcoded it so we
+		glEnableVertexAttribArray(colAttrib);							  // actually already know what it is. But this is how to get it if you don't.
+		glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(GLfloat) * 3)); // last arg is how many to skip to get to this.
+																												 // Here there were 3 position vertices to skip.
 
 		glGenBuffers(1, &indexArrayBufferID);
 
@@ -198,7 +201,7 @@ void MeGlWindow::sendDataToOpenGL()
 void MeGlWindow::initializeGL()
 {
 	//setMouseTracking(true);
-	if (THREE_D)
+	//if (THREE_D)
 		glEnable(GL_DEPTH_TEST);
 	sendDataToOpenGL();
 	installShaders();

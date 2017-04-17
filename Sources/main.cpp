@@ -53,7 +53,8 @@ int main(int argc, char * argv[]) {
 			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			//glClear(GL_COLOR_BUFFER_BIT);
 			//glDrawArrays(GL_TRIANGLES, 0, 3);
-			                                               
+
+			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 			glDrawElements
 			(
 				GL_TRIANGLES, 

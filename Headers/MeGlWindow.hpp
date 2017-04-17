@@ -14,6 +14,10 @@ class MeGlWindow
 
 protected:
 
+	const GLuint NUM_VERTICES_PER_TRI = 3;
+	const GLuint NUM_FLOATS_PER_VERTICE = 6;
+	const GLuint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(GLfloat);
+
 	void initializeGL();
 	void paintGL();
 	void runGL();
