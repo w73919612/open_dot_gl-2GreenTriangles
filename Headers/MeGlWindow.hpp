@@ -19,7 +19,6 @@ protected:
 	const GLuint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(GLfloat);
 
 	void initializeGL();
-	void paintGL();
 	void runGL();
 	//void mouseMoveEvent(QMouseEvent*);
 
@@ -34,6 +33,7 @@ public:
 	int width;
 	int height;
 
+	void paintGL();
 	MeGlWindow(int w, int h)
 	{
 		this->runGL();

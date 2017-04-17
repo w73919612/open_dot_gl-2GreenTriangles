@@ -5,6 +5,7 @@ class ShapeGenerator
 {
 public:
 	static ShapeData makeTriangle();
+	static ShapeData makeTriangles();
 	static ShapeData makeCube();
 };
 

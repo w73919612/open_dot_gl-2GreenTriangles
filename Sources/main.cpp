@@ -49,36 +49,16 @@ int main(int argc, char * argv[]) {
 			// Flip Buffers and Draw
 			glfwSwapBuffers(mWindow);
 			glfwPollEvents();
-
-			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			//glClear(GL_COLOR_BUFFER_BIT);
-			//glDrawArrays(GL_TRIANGLES, 0, 3);
-
-			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-			glDrawElements
-			(
-				GL_TRIANGLES, 
-				meglw.numIndices, 
-				GL_UNSIGNED_SHORT,	// The type of the indices (see ShapeData.hpp)
-				NULL				// offset into the element array buffer (usually zero or NULL) - its a very old function.
-			);
-			/*
-			glDrawElementsInstanced
-			(
-				GL_TRIANGLES, 
-				meglw.numIndices, 
-				GL_UNSIGNED_SHORT,  // The type of the indices (see ShapeData.hpp)
-				0,				    // offset into the element array buffer (usually zero or NULL) - its a very old function.
-				NULL				// number of instances
-			);
-			*/
+			
+			meglw.paintGL();
+			
     }   
-		
-	glfwTerminate();
 
 	glDeleteProgram(meglw.programID);
-	glDeleteBuffers(1, &meglw.vertexBufferID); 
+	glDeleteBuffers(1, &meglw.vertexBufferID);
 	glDeleteBuffers(1, &meglw.indexArrayBufferID);
 	glDeleteVertexArrays(1, &meglw.vertexArrayObject_VAO);
+	glfwTerminate();
+
     return EXIT_SUCCESS;
 }

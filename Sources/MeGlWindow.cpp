@@ -15,8 +15,7 @@
 using namespace std;
 using glm::vec3;
 using glm::mat4;
-
-bool THREE_D = false;
+bool THREE_D = true;
 Camera camera;
 
 /* *************************************************************************************************/
@@ -74,18 +73,11 @@ void MeGlWindow::installShaders()
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 	string temp;
 	const GLchar* adapter[1];
-	if (THREE_D)
-		temp = readShaderCode("./Glitter/Sources/Shaders/VertexShaderCode.glsl");
-	else
-		temp = readShaderCode("./Glitter/Sources/Shaders/VertexShaderCode1D.glsl");
+	temp = readShaderCode("./Glitter/Sources/Shaders/VertexShaderCode.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, adapter, 0);
 
-	if (THREE_D)
-		temp = readShaderCode("./Glitter/Sources/Shaders/FragmentShaderCode.glsl");
-	else
-		temp = readShaderCode("./Glitter/Sources/Shaders/FragmentShaderCode1D.glsl");
-
+	temp = readShaderCode("./Glitter/Sources/Shaders/FragmentShaderCode.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, adapter, 0);
 
@@ -194,6 +186,7 @@ void MeGlWindow::sendDataToOpenGL()
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, tri.indexBufferSize(), tri.indices, GL_STATIC_DRAW);
+
 	}
 
 }
@@ -205,22 +198,56 @@ void MeGlWindow::initializeGL()
 		glEnable(GL_DEPTH_TEST);
 	sendDataToOpenGL();
 	installShaders();
-	paintGL();
 }
 
 void MeGlWindow::paintGL()
 {
-	if (THREE_D)
+
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, width, height);
+
+	mat4 translationMatrix = glm::translate(mat4(), vec3(0.0f, 0.0f, -5.0f));
+	mat4 rotationMatrix = glm::rotate(mat4(), 54.0f, vec3(1.0f, 0.5f, 0.5f));
+	mat4 projectionMatrix = glm::perspective(45.0f, ((float)width) / height, 0.1f, 10.0f);
+
+	mat4 fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
+
+	GLint fullTransformMatrixUniformLocation =
+		glGetUniformLocation(programID, "fullTransformMatrix");
+
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+
+	/*
+	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width) / height, 0.1f, 10.0f);
+	mat4 fullTransforms[] =
 	{
-		mat4 projectionMatrix = glm::perspective(60.0f, ((float)width) / height, 0.1f, 10.0f);
-		mat4 fullTransforms[] =
-		{
-			projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-1.0f, 0.0f, -3.0f)) * glm::rotate(36.0f, vec3(1.0f, 0.0f, 0.0f)),
-			projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, vec3(0.0f, 1.0f, 0.0f))
-		};
-		glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	}
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(0.0f, vec3(0.0f, 0.0f, 0.0f)),
+		//projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, vec3(0.0f, 1.0f, 0.0f))
+	};
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
+
+	*/
+	
+	glDrawElements
+	(
+		GL_TRIANGLES,
+		numIndices,
+		GL_UNSIGNED_SHORT,	// The type of the indices (see ShapeData.hpp)
+		NULL				// offset into the element array buffer (usually zero or NULL) - its a very old function.
+	);
+
+
+	/*
+	glDrawElementsInstanced
+	(
+	GL_TRIANGLES,
+	meglw.numIndices,
+	GL_UNSIGNED_SHORT,  // The type of the indices (see ShapeData.hpp)
+	0,				    // offset into the element array buffer (usually zero or NULL) - its a very old function.
+	NULL				// number of instances
+	);
+	*/
+
 }
 
 void MeGlWindow::runGL()
