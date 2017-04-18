@@ -2,6 +2,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <GLFW/glfw3.h>
 #include <string>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
@@ -16,8 +18,15 @@ using namespace std;
 using glm::vec3;
 using glm::mat4;
 bool THREE_D = true;
-Camera camera;
-
+GLint uniColor;
+float t_start;
+const GLfloat lineVertices[] =
+{
+	-10, -10, 0,
+	-10, 10, 0,
+	10, 10, 0,
+	10, -10, 0
+};
 /* *************************************************************************************************/
 
 bool checkStatus(
@@ -112,6 +121,8 @@ void MeGlWindow::sendDataToOpenGL()
 {
 	if (THREE_D)
 	{
+		
+
 		ShapeData cube = ShapeGenerator::makeCube();
 		GLuint vertexBufferID;
 		glGenBuffers(1, &vertexBufferID);
@@ -126,12 +137,12 @@ void MeGlWindow::sendDataToOpenGL()
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (char*)(sizeof(float) * 3));
-
 		GLuint indexArrayBufferID;
 		glGenBuffers(1, &indexArrayBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube.indexBufferSize(), cube.indices, GL_STATIC_DRAW);
 		numIndices = cube.numIndices;
+		//uniColor = glGetUniformLocation(programID, "triangleColor");
 		cube.cleanup();
 
 		GLuint transformationMatrixBufferID;
@@ -139,7 +150,6 @@ void MeGlWindow::sendDataToOpenGL()
 		glBindBuffer(GL_ARRAY_BUFFER, transformationMatrixBufferID);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mat4) * 2, 0, GL_DYNAMIC_DRAW);
-
 
 		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(float) * 0));
 		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(float) * 4));
@@ -153,6 +163,13 @@ void MeGlWindow::sendDataToOpenGL()
 		glVertexAttribDivisor(3, 1);
 		glVertexAttribDivisor(4, 1);
 		glVertexAttribDivisor(5, 1);
+
+
+		t_start = (float)glfwGetTime();
+
+
+		
+
 	}
 	else
 	{
@@ -171,13 +188,13 @@ void MeGlWindow::sendDataToOpenGL()
 
 		//GLint posAttrib = glGetAttribLocation(programID, "position");  // This grabs the "location" from the shader.  We may have hardcoded it so we
 
-		GLint posAttrib = 0;// 	glGetAttribLocation(programID, "position");  // This grabs the "location" from the shader.  We may have hardcoded it so we
+		GLint posAttrib = 0;
 		glEnableVertexAttribArray(posAttrib);							  // actually already know what it is. But this is how to get it if you don't.
 		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 
 		//GLint colAttrib = glGetAttribLocation(programID, "vertexColor");// This grabs the "location" from the shader.  We may have hardcoded it so we
 
-		GLint colAttrib = 1; // glGetAttribLocation(programID, "vertexColor");// This grabs the "location" from the shader.  We may have hardcoded it so we
+		GLint colAttrib = 1;
 		glEnableVertexAttribArray(colAttrib);							  // actually already know what it is. But this is how to get it if you don't.
 		glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(GLfloat) * 3)); // last arg is how many to skip to get to this.
 																												 // Here there were 3 position vertices to skip.
@@ -194,8 +211,7 @@ void MeGlWindow::sendDataToOpenGL()
 void MeGlWindow::initializeGL()
 {
 	//setMouseTracking(true);
-	//if (THREE_D)
-		glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	sendDataToOpenGL();
 	installShaders();
 }
@@ -203,50 +219,41 @@ void MeGlWindow::initializeGL()
 void MeGlWindow::paintGL()
 {
 
+	//glfwGetCursorPos(mWindow, &mouse_xpos, &mouse_ypos);
+	//camera.mouseUpdate(glm::vec2(mouse_xpos, mouse_ypos));
+
+	// GET TIME
+	auto t_now = (float)glfwGetTime();
+	float time = ((float)t_now - t_start);
+
+	float sine = std::sin(time * 4.0f) + 1.0f / 2.0f;
+	//vec3 dominatingColor = vec3(sine, 0.0f, 0.0f);
+
+	
+	//glUniform3fv(uniColor,1, &dominatingColor[0]);
+	mat4 projectionMatrix = glm::perspective(45.0f, ((float)width) / height, 0.1f, 10.0f);
+
+	mat4 fullTransforms[] =
+	{
+		//cube 1
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-1.0f, 0.0f, -6.5f)) * glm::rotate(54.0f, vec3(1.0f, 0.0f, 0.0f)),
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -6.75f)) * glm::rotate(54.0f, vec3(0.0f, 1.0f, 0.0f))
+	};
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width, height);
 
-	mat4 translationMatrix = glm::translate(mat4(), vec3(0.0f, 0.0f, -5.0f));
-	mat4 rotationMatrix = glm::rotate(mat4(), 54.0f, vec3(1.0f, 0.5f, 0.5f));
-	mat4 projectionMatrix = glm::perspective(45.0f, ((float)width) / height, 0.1f, 10.0f);
 
-	mat4 fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
-
-	GLint fullTransformMatrixUniformLocation =
-		glGetUniformLocation(programID, "fullTransformMatrix");
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-
-	/*
-	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width) / height, 0.1f, 10.0f);
-	mat4 fullTransforms[] =
-	{
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(0.0f, vec3(0.0f, 0.0f, 0.0f)),
-		//projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, vec3(0.0f, 1.0f, 0.0f))
-	};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
-
-	*/
-	
-	glDrawElements
-	(
-		GL_TRIANGLES,
-		numIndices,
-		GL_UNSIGNED_SHORT,	// The type of the indices (see ShapeData.hpp)
-		NULL				// offset into the element array buffer (usually zero or NULL) - its a very old function.
-	);
-
-
-	/*
 	glDrawElementsInstanced
 	(
 	GL_TRIANGLES,
-	meglw.numIndices,
+	numIndices,
 	GL_UNSIGNED_SHORT,  // The type of the indices (see ShapeData.hpp)
 	0,				    // offset into the element array buffer (usually zero or NULL) - its a very old function.
-	NULL				// number of instances
+	2				// number of instances
 	);
-	*/
 
 }
 

@@ -15,6 +15,10 @@ using namespace std;
 using glm::vec3;
 using glm::mat4;
 
+static MeGlWindow *meglw;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void cursorPostionCallback(GLFWwindow *window, double xPos, double yPos);
+//void cursorEnterCallback(GLFWwindow *window, int entered);
 
 int main(int argc, char * argv[]) {
 
@@ -27,7 +31,7 @@ int main(int argc, char * argv[]) {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     auto mWindow = glfwCreateWindow(mWidth, mHeight, "OpenGL", nullptr, nullptr);
-
+	//glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     // Check for Valid Context
     if (mWindow == nullptr) {
         fprintf(stderr, "Failed to Create OpenGL Context");
@@ -39,7 +43,16 @@ int main(int argc, char * argv[]) {
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
-	MeGlWindow meglw = MeGlWindow(mWidth, mHeight);
+	meglw = new MeGlWindow(mWidth, mHeight, mWindow);
+	glfwSetKeyCallback(mWindow, key_callback);
+
+
+	//glfwSetCursorEnterCallback(mWindow, cursorEnterCallback);
+	glfwSetCursorPosCallback(mWindow, cursorPostionCallback);
+	//glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(mWindow, GLFW_STICKY_KEYS, 1);
 
     // Rendering Loop
 		while (glfwWindowShouldClose(mWindow) == false) {
@@ -50,15 +63,67 @@ int main(int argc, char * argv[]) {
 			glfwSwapBuffers(mWindow);
 			glfwPollEvents();
 			
-			meglw.paintGL();
+			meglw->paintGL();
 			
     }   
 
-	glDeleteProgram(meglw.programID);
-	glDeleteBuffers(1, &meglw.vertexBufferID);
-	glDeleteBuffers(1, &meglw.indexArrayBufferID);
-	glDeleteVertexArrays(1, &meglw.vertexArrayObject_VAO);
+	glDeleteProgram(meglw->programID);
+	glDeleteBuffers(1, &meglw->vertexBufferID);
+	glDeleteBuffers(1, &meglw->indexArrayBufferID);
+	glDeleteVertexArrays(1, &meglw->vertexArrayObject_VAO);
 	glfwTerminate();
 
     return EXIT_SUCCESS;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_REPEAT)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_W:
+			meglw->camera.moveForward();
+			break;
+		case GLFW_KEY_E:
+			meglw->camera.moveBackward();
+			break;
+
+		case GLFW_KEY_S:
+			meglw->camera.strafeLeft();
+			break;
+		case GLFW_KEY_D:
+			meglw->camera.strafeRight();
+			break;
+
+		case GLFW_KEY_A:
+			meglw->camera.moveUp();
+			break;
+		case GLFW_KEY_F:
+			meglw->camera.moveDown();
+			break;
+		}
+	}
+	/*
+	if (key == GLFW_KEY_W)
+	{
+		switch (action)
+		{
+			case GLFW_REPEAT:
+			meglw->camera.moveForward();
+			break;
+		}
+	}
+	*/
+}
+/*
+void cursorEnterCallback(GLFWwindow *window, int entered)
+{
+	cout << "Entered Callback";
+}
+*/
+static void cursorPostionCallback(GLFWwindow *window, double xPos, double yPos)
+{
+
+	meglw->camera.mouseUpdate(glm::vec2(xPos, yPos));
 }

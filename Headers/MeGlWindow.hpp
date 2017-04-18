@@ -3,6 +3,9 @@
 //#include <QtOpenGL\qglwidget>
 #include <string>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include "Camera.hpp"
+
 
 class MeGlWindow
 {
@@ -20,25 +23,30 @@ protected:
 
 	void initializeGL();
 	void runGL();
-	//void mouseMoveEvent(QMouseEvent*);
-
 public:
 	GLint programID;
 	GLuint vertexBufferID;
 	GLuint vertexArrayObject_VAO;
 	GLuint indexArrayBufferID;
-
+	GLFWwindow *mWindow;
 	GLint numIndices;
+	Camera camera;
 
 	int width;
 	int height;
+	double mouse_xpos=0, mouse_ypos=0;
 
 	void paintGL();
-	MeGlWindow(int w, int h)
+	void mouseEvent();
+
+	MeGlWindow() = default;
+
+	MeGlWindow(int w, int h, GLFWwindow *mWin)
 	{
 		this->runGL();
 		this->width = w;
 		this->height = h;
+		mWindow = mWin;
 	}
 		
 	~MeGlWindow() = default;

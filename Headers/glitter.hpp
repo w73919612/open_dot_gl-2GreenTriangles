@@ -22,6 +22,6 @@
 //const int mWidth = 1280;
 //const int mHeight = 800;
 const int mWidth = 1280;
-const int mHeight = 480;
+const int mHeight = 640;
 
 #endif //~ Glitter Header
