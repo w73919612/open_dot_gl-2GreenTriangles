@@ -13,6 +13,10 @@
 #include "MeGlWindow.hpp"
 #include "Primitives\ShapeData.hpp"
 #include "Primitives\ShapeGenerator.hpp"
+#define d2rad(x) x*(3.141592f/180.0f)
+
+
+//mathopenref.com/coordpolygonarea.html
 
 using namespace std;
 using glm::vec3;
@@ -123,11 +127,11 @@ void MeGlWindow::sendDataToOpenGL()
 	{
 		
 
-		ShapeData cube = ShapeGenerator::makeCube();
+		ShapeData shape = ShapeGenerator::makeArrow();
 		GLuint vertexBufferID;
 		glGenBuffers(1, &vertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, cube.vertexBufferSize(), cube.vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
 
 		// Create Vertex Array Object
 		glGenVertexArrays(1, &vertexArrayObject_VAO);
@@ -140,10 +144,10 @@ void MeGlWindow::sendDataToOpenGL()
 		GLuint indexArrayBufferID;
 		glGenBuffers(1, &indexArrayBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube.indexBufferSize(), cube.indices, GL_STATIC_DRAW);
-		numIndices = cube.numIndices;
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
+		numIndices = shape.numIndices;
 		//uniColor = glGetUniformLocation(programID, "triangleColor");
-		cube.cleanup();
+		shape.cleanup();
 
 		GLuint transformationMatrixBufferID;
 		glGenBuffers(1, &transformationMatrixBufferID);
@@ -236,8 +240,10 @@ void MeGlWindow::paintGL()
 	mat4 fullTransforms[] =
 	{
 		//cube 1
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-1.0f, 0.0f, -6.5f)) * glm::rotate(54.0f, vec3(1.0f, 0.0f, 0.0f)),
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -6.75f)) * glm::rotate(54.0f, vec3(0.0f, 1.0f, 0.0f))
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-1.0f, 0.0f, -3.00f)) * 
+		glm::rotate(d2rad(36.0f), vec3(1.0f, .0f, 0.0f)),
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(1.0f, 0.0f, -3.75f)) * 
+		glm::rotate(d2rad(126.0f), vec3(0.0f, 1.0f, 0.0f))
 	};
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);

@@ -35,6 +35,7 @@ public:
 	int width;
 	int height;
 	double mouse_xpos=0, mouse_ypos=0;
+	GLuint fullTransformationUniformLocation;
 
 	void paintGL();
 	void mouseEvent();
