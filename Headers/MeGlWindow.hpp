@@ -26,11 +26,11 @@ protected:
 public:
 	GLint programID;
 	GLuint vertexBufferID;
-	GLuint vertexArrayObject_VAO;
 	GLuint indexArrayBufferID;
 	GLFWwindow *mWindow;
 	GLint numIndices;
 	Camera camera;
+	GLuint planeNormalsVertexArrayObjectID;
 
 	int width;
 	int height;
@@ -38,7 +38,6 @@ public:
 	GLuint fullTransformationUniformLocation;
 
 	void paintGL();
-	void mouseEvent();
 
 	MeGlWindow() = default;
 

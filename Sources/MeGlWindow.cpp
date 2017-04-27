@@ -124,16 +124,15 @@ void MeGlWindow::installShaders()
 void MeGlWindow::sendDataToOpenGL()
 {
 
-	//ShapeData test = ShapeGenerator::makePlaneIndices(5);
-	ShapeData shape = ShapeGenerator::makePlane(5);
+	ShapeData plane = ShapeGenerator::makePlane(20);
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, plane.vertexBufferSize(), plane.vertices, GL_DYNAMIC_DRAW);
 
 	// Create Vertex Array Object
-	glGenVertexArrays(1, &vertexArrayObject_VAO);
-	glBindVertexArray(vertexArrayObject_VAO);
+	glGenVertexArrays(1, &planeNormalsVertexArrayObjectID);
+	glBindVertexArray(planeNormalsVertexArrayObjectID);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
@@ -142,11 +141,16 @@ void MeGlWindow::sendDataToOpenGL()
 	GLuint indexArrayBufferID;
 	glGenBuffers(1, &indexArrayBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
-	numIndices = shape.numIndices;
-	//uniColor = glGetUniformLocation(programID, "triangleColor");
-	shape.cleanup();
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, plane.indexBufferSize(), plane.indices, GL_DYNAMIC_DRAW);
+	numIndices = plane.numIndices;
+	plane.cleanup();
 
+
+
+
+
+
+/*
 	GLuint transformationMatrixBufferID;
 	glGenBuffers(1, &transformationMatrixBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, transformationMatrixBufferID);
@@ -165,7 +169,7 @@ void MeGlWindow::sendDataToOpenGL()
 	glVertexAttribDivisor(3, 1);
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
-
+*/
 
 	t_start = (float)glfwGetTime();
 
@@ -184,6 +188,7 @@ void MeGlWindow::initializeGL()
 void MeGlWindow::paintGL()
 {
 
+
 	//glfwGetCursorPos(mWindow, &mouse_xpos, &mouse_ypos);
 	//camera.mouseUpdate(glm::vec2(mouse_xpos, mouse_ypos));
 
@@ -195,25 +200,32 @@ void MeGlWindow::paintGL()
 	//vec3 dominatingColor = vec3(sine, 0.0f, 0.0f);
 	if (rotatingAngle == 360.0)
 		rotatingAngle = 0.0;
-	rotatingAngle = rotatingAngle + .05;
-	//glUniform3fv(uniColor,1, &dominatingColor[0]);
-	mat4 projectionMatrix = glm::perspective(45.0f, ((float)width) / height, 0.1f, 20.0f);
-	
-	mat4 fullTransforms[] =
-	{
-		//cube 1
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-2.0f, 0.0f, -8.00f)) * 
-		glm::rotate(d2rad(0.1f), vec3(1.0f, 0.0f, 0.0f)),
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(2.0f, 0.0f, -8.75f)) * 
-		glm::rotate(d2rad(rotatingAngle*3.0f), vec3(0.0f, 1.0f, 0.0f))
-	};
+	rotatingAngle = rotatingAngle + .05f;
+	//glUniform3fv(uniColor,1, &dominatingColor[0]);	//model to world
+	//world to view
+	//view to projection
+	    //world to projection
+	//model to world to view to projection (i.e. full)
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
+
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width, height);
 
+	mat4 fullTransformMatrix;
+	mat4 planeModelToWorldMatrix = glm::translate(vec3(0.0f, 0.0f, -15.0f));
+	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
+	mat4 viewToProjectionMatrix = glm::perspective(d2rad(60.0f), ((float)width) / height, 0.1f, 30.0f);
+	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
+	fullTransformMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
+
+	glBindVertexArray(planeNormalsVertexArrayObjectID);
+	fullTransformationUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+
+	/*
 	glDrawElementsInstanced
 	(
 	GL_TRIANGLES,
@@ -222,7 +234,7 @@ void MeGlWindow::paintGL()
 	0,				    // offset into the element array buffer (usually zero or NULL) - its a very old function.
 	2				// number of instances
 	);
-
+	*/
 }
 
 void MeGlWindow::runGL()

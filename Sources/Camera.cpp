@@ -1,8 +1,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "Camera.hpp"
 #include <glm\gtx\transform.hpp>
-
+#include <iostream>
 Camera::Camera() : 
+	position(-0.111659f, 3.44715f, 1.99352f),
 	viewDirection(0.0f, 0.0f, -1.0f), 
 	UP(0.0f, 1.0f, 0.0f)
 {
@@ -28,6 +29,7 @@ void Camera::mouseUpdate(const glm::vec2& newMousePosition)
 
 glm::mat4 Camera::getWorldToViewMatrix() const
 {
+	std::cout << "Position of EYE: " << position.x << ", " << position.y << ", " << position.z << "\n";
 	return glm::lookAt(position, position + viewDirection, UP);
 }
 

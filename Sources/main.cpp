@@ -70,7 +70,6 @@ int main(int argc, char * argv[]) {
 	glDeleteProgram(meglw->programID);
 	glDeleteBuffers(1, &meglw->vertexBufferID);
 	glDeleteBuffers(1, &meglw->indexArrayBufferID);
-	glDeleteVertexArrays(1, &meglw->vertexArrayObject_VAO);
 	glfwTerminate();
 
     return EXIT_SUCCESS;
