@@ -124,7 +124,8 @@ void MeGlWindow::installShaders()
 void MeGlWindow::sendDataToOpenGL()
 {
 
-	ShapeData plane = ShapeGenerator::makePlane(20);
+	ShapeData plane = ShapeGenerator::makePyramid();
+	//ShapeData plane = ShapeGenerator::makePlane(20);
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -204,7 +205,7 @@ void MeGlWindow::paintGL()
 	//glUniform3fv(uniColor,1, &dominatingColor[0]);	//model to world
 	//world to view
 	//view to projection
-	    //world to projection
+	//world to projection
 	//model to world to view to projection (i.e. full)
 
 
@@ -215,7 +216,7 @@ void MeGlWindow::paintGL()
 	mat4 fullTransformMatrix;
 	mat4 planeModelToWorldMatrix = glm::translate(vec3(0.0f, 0.0f, -15.0f));
 	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
-	mat4 viewToProjectionMatrix = glm::perspective(d2rad(60.0f), ((float)width) / height, 0.1f, 30.0f);
+	mat4 viewToProjectionMatrix = glm::perspective(d2rad(60.0f), ((float)width) / height, 0.1f, 100.0f);
 	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 	fullTransformMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;

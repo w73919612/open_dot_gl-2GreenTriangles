@@ -159,6 +159,39 @@ ShapeData ShapeGenerator::makeCube() {
 	return ret;
 }
 
+ShapeData ShapeGenerator::makePyramid() {
+	ShapeData ret;
+
+	Vertex stackVerts[] = {
+
+		vec3( 0.0f, 1.0f, 0.0f), // 0
+		vec3( 0.0f, 0.0f, 1.0f), // Color
+		vec3(-1.0f, 0.0f, 1.0f), // 1
+		vec3( 0.0f, 0.0f, 1.0f), // Color
+		vec3( 1.0f, 0.0f, 1.0f), // 2
+		vec3( 0.0f, 0.0f, 1.0f), // Color
+		vec3( 1.0f, 0.0f,-1.0f), // 3
+		vec3( 0.0f, 1.0f, 0.0f), // Color
+		vec3(-1.0f, 0.0f,-1.0f), // 4
+		vec3( 1.0f, 0.0f, 0.0f)  // Color
+	};
+
+	ret.numVertices = NUM_ARRAY_ELEMENTS(stackVerts);
+	ret.vertices = new Vertex[ret.numVertices];
+	memcpy(ret.vertices, stackVerts, sizeof(stackVerts));
+
+	unsigned short stackIndices[] = {
+		0,   1,  2,  0,  2,  3, 
+		0,   3,  4,  0,  4,  1, 
+		1,   4,  2,  2,  4,  3
+	};
+	ret.numIndices = NUM_ARRAY_ELEMENTS(stackIndices);
+	ret.indices = new GLushort[ret.numIndices];
+	memcpy(ret.indices, stackIndices, sizeof(stackIndices));
+
+	return ret;
+}
+
 glm::vec3 randomColor()
 {
 	glm::vec3 ret;
